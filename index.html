@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Favicon principal -->
+    <link rel="icon" type="image/png" href="favicon_io/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon_io/favicon.svg" />
+    <link rel="shortcut icon" href="favicon_io/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png" />
+    <link rel="manifest" href="favicon_io/site.webmanifest" />
+
+
+    <title>TechNexus - Gaming Store</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #18181c;
+            color: #ededed;
+            min-height: 100vh;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48px;          /* Hauteur réduite */
+            padding: 0.3rem 1.2rem; /* Espacement réduit */
+            background: #23232a;
+            border-bottom: 2px solid #e63946;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10000;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        header .logo h1 {
+            font-size: 1.2rem;     /* Texte plus petit */
+            margin: 0;
+        }
+
+        header .logo img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color .2s;
+            font-size: 0.85rem;    /* Liens plus petits */
+            margin-left: 1rem;
+        }
+
+        nav a:hover {
+            color: #e63946;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            padding: 2rem;
+            min-height: 60vh;
+            padding-top: 100px;
+            padding-bottom: 40px;
+
+        }
+
+        section.page {
+            display: none;
+        }
+
+        section.page.active {
+            display: block;
+        }
+
+        /* Slider accueil */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 2.5rem auto;
+            border-radius: 15px;
+            box-shadow: 0 2px 24px #12121760;
+            overflow: hidden;
+            min-height: 230px;
+            background: #232332;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 300px;
+            align-items: center;
+            justify-content: center;
+            background: #232332;
+            position: absolute;
+            left: 0;
+            top: 0;
+            transition: opacity .6s;
+        }
+
+        .slide.active {
+            display: flex !important;
+            opacity: 1;
+            z-index: 2;
+            position: relative;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            opacity: 0.90;
+        }
+
+        .slide-content {
+            position: absolute;
+            left: 30px;
+            bottom: 35px;
+            color: #fff;
+            padding: 1.2em 1.3em .9em 1.3em;
+            background: rgba(33,33,36,0.43);
+            border-radius: 12px;
+        }
+
+        .slide-title {
+            font-weight: bold;
+            font-size: 1.8em;
+            color: #e63946;
+        }
+
+        .slide-desc {
+            font-size: 1.06em;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 48%;
+            transform: translateY(-50%);
+            background: rgba(34,34,40,0.43);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1.7em;
+            font-weight: 900;
+            cursor: pointer;
+            transition: background .2s;
+            z-index: 6;
+        }
+
+        .slider-btn.left { left: 15px; }
+        .slider-btn.right { right: 15px; }
+        .slider-btn:hover { background: #e63946; }
+
+        /* Grille de cartes produits accueil */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .product-card {
+            background: #232332;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px #12121730;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card img {
+            width: 100%;
+            border-radius: 12px 12px 0 0;
+        }
+        .content {
+            padding: 1.2rem;
+        }
+        .content h2 {
+            color: #e63946;
+            font-size: 1.3rem;
+            margin-bottom: 0.4rem;
+        }
+        .content p{
+            color: #ababab;
+            margin-bottom: 1.2rem;
+        }
+        .button-row {
+            display: flex;
+            gap: 1.1rem;
+        }
+        .button-link, .add-cart {
+            background: #e63946;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1.2rem;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .button-link:hover, .add-cart:hover { background: #b52836; }
+
+        /* ---- FICHE PRODUIT MODERNE (type Nike) ---- */
+        .product-flex-wrap {
+            display: flex; gap:2.5rem;
+            background: #232332;
+            box-shadow: 0 2px 18px #12121760;
+            border-radius: 16px; padding: 2.5rem 2rem;
+            align-items: flex-start; margin-bottom: 2.4rem; flex-wrap: wrap;
+        }
+        .prod-gallery { flex:1 1 320px; max-width:360px; }
+        .prod-gallery img { width:100%; border-radius:12px; background:#1a1a22; min-height:180px; object-fit:cover; box-shadow:0 0 14px #1211;}
+        .prod-thumb-row { display:flex;gap:10px;margin-top:14px; }
+        .prod-thumb-row img { width:60px; height:50px; border-radius:8px; border:2px solid #232332; object-fit:cover; cursor:pointer; transition:border .16s;}
+        .prod-thumb-row img.selected, .prod-thumb-row img:hover { border:2px solid #e63946;}
+        .prod-info-card { flex:1 1 320px; max-width:430px; display:flex;flex-direction:column;}
+        .prod-info-card h2{ font-size:2.1rem; letter-spacing:0.02em; font-weight:900; color:#e63946; }
+        .prod-minor{ color:#aaa; font-size:1.07em; margin-bottom:6px; margin-top:2px;}
+        .prod-desc{ color:#ccc; margin-bottom:13px; margin-top:4px; font-size:1.13em;}
+        .prod-label{ display:block; margin-top:14px; font-weight:700; color:#eee; font-size:1em;}
+        .prod-color-row {display:flex; gap:13px; margin-bottom:16px;}
+        .prod-color { border:none; outline:2px solid transparent; border-radius: 50%; cursor:pointer; width:27px; height:27px; transition:outline .2s; }
+        .prod-color.selected, .prod-color:focus { outline:2.5px solid #e63946;}
+        .prod-size-row { display:flex; gap:10px; margin-bottom:6px;}
+        .prod-size { background:#252534; color:#fff; border:none; border-radius:6px; padding:0.46em 1.29em; font-size:1em; cursor:pointer; font-weight:700; letter-spacing:0.03em;}
+        .prod-size.selected, .prod-size:focus { background:#e63946; color:white;}
+        .prod-buy-btn { background:#2978f7; color:#fff; font-weight:900; border:none; border-radius:7px; font-size:1.13em; padding:.66em 2.5em; letter-spacing:.045em; box-shadow:0 0 8px #1a1a18cc; cursor:pointer; transition: background .16s;}
+        .prod-buy-btn[disabled]{ opacity:.44; filter: grayscale(.6); cursor:default;}
+        .prod-buy-btn:not([disabled]):hover { background: #1c4ef7;}
+        .prod-price { font-size:1.24em; font-weight:900; color:#ededed;}
+        .back-button { color:#e63946; background:none; border:none; font-size:1rem; cursor:pointer; margin-top:1.3rem; font-weight:700;}
+        .back-button:hover{text-decoration:underline;}
+
+        .cart-list{list-style:none;margin-bottom:2rem;}
+        .cart-list li{background:#232332;padding:1rem;border-radius:6px;margin-bottom:0.7rem;display:flex;justify-content:space-between;align-items:center;}
+        .cart-list li span{flex:1;}
+        .cart-list li button{background:#b52836;color:white;border:none;padding:0.3rem 0.7rem;border-radius:5px;font-weight:600;}
+        .cart-list li button:hover{background:#e63946;}
+
+        footer {
+            position: fixed;      /* Fixe en bas */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 32px;         /* Hauteur réduite */
+            line-height: 32px;    /* Centrer verticalement */
+            background-color: #23232a;
+            color: #888;
+            text-align: center;
+            font-size: 0.75rem;    /* Taille de texte réduite */
+            border-top: 1px solid #e63946;
+            z-index: 10000;
+            padding: 0;            /* Supprime padding */
+        }
+        /* Popup Cookies + paiement + footer/complements etc. */
+        .cookie-popup{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:9999;background:#252529;color:#fff;box-shadow:0 6px 20px #32323833;border-radius:12px;padding:1.3rem 2.1rem 1.3rem 1.7rem;min-width:330px;display:flex;flex-direction:column;align-items:flex-start;font-size:1rem;gap:1.2rem;transition:opacity .2s;}
+        .cookie-popup .cookie-title{font-weight:bold; margin-bottom:0.3em;}
+        .cookie-popup .cookie-actions{display:flex;gap:0.7rem;flex-wrap:wrap;}
+        .cookie-popup button{padding:0.45em 1.1em;border-radius:8px;border:none;font-weight:700;font-size:1rem;cursor:pointer;background:#e63946;color:#fff;transition:background 0.15s;}
+        .cookie-popup button.secondary{background:#222;color:#eee;border:1px solid #e63946;}
+        .cookie-popup button:hover{background:#b52836;}
+        .cookie-popup button.secondary:hover{background:#353535;color:#f04;}
+        .cookie-popup.hide{display:none !important;}
+        #payment-modal{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#18181cdb;z-index:5000;display:none;align-items:center;justify-content:center;}
+        #payment-modal.active{display:flex;}
+        #payment-content{background:#202026;border-radius:15px;box-shadow:0 4px 30px #2a2a33c0;max-width:370px;width:95%;padding:2.1rem 2.2rem 1.7rem 2.2rem;color:#ededed;display:flex;flex-direction:column;gap:1.1rem;font-family:'Segoe UI',sans-serif;position:relative;}
+        #payment-content .close-x{position:absolute;right:17px;top:17px;color:#bd8b93;font-size:1.45rem;cursor:pointer;}
+        #payment-content h3{text-align:left;letter-spacing:0.6px;font-size:1.15rem;font-weight:700;margin-bottom:0.6rem;}
+        .pay-logos{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+        .pay-logos img{height:24px;}
+        .payment-label{color:#9a9ab8;font-size:1.06rem;margin-bottom:2px;font-weight:500;}
+        .payment-input,.payment-row input{background:none;border:none;border-bottom:2px solid #353544;color:#ededed;font-size:1.1rem;width:94%;outline:none;margin-bottom:19px;padding:0.6em 0;}
+        .payment-input:focus,.payment-row input:focus{border-bottom:2px solid #e63946;}
+        .payment-row{display:flex;gap:1.1rem;}
+        .payment-row input{width:calc(48% - 1px);}
+        .cvc-eye-group{position:relative;width:100%;}
+        .eye-btn{position:absolute;right:9px;top:35px;cursor:pointer;background:none;border:none;color:#aaa;font-size:1.06em;padding:2px;}
+        .pay-save-row{display:flex;align-items:center;gap:8px;margin-top:-10px;}
+        .pay-save-checkbox{accent-color:#e63946;}
+        .pay-btn-modal{background:#222;color:#fff;padding:0.87rem 0;border-radius:11px;width:100%;font-size:1.11rem;font-weight:800;border:none;margin-top:8px;box-shadow:0 2px 6px #1111;cursor:pointer;transition:background .22s;}
+        .pay-btn-modal:hover{background:#e63946;}
+        .pay-success{color:#44ef89;font-weight:700;margin-top:8px;}
+        .pay-error{color:#ff6363;font-weight:700;margin-top:8px;}
+        #conditions, #contact { background:#1a1a20; border-radius:10px; padding:2rem; margin-top:2rem;}
+        #conditions h2, #contact h2 { color:#e63946;}
+
+        @media (max-width:900px) {
+            .main, main { padding:1rem;}
+            .slider-container, .slide img { height:170px; min-height:130px;}
+            .slide-content{left:10px;bottom:10px;padding:0.6em;}
+            .slide-title{font-size:1.1em;}
+            .product-flex-wrap{flex-direction:column;align-items:stretch;}
+            .prod-gallery{max-width:600px;margin:0 auto 1rem auto;}
+        }
+
+        @media (max-width:600px) {
+            main{padding:0.5rem;}
+            .slider-container, .slide img { height:120px; min-height:80px;}
+            .product-flex-wrap{padding:1rem 0.5rem;}
+            .prod-info-card{max-width:100%;}
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo"><img src="img/Logo.jpg" alt="TechNexus Logo"><h1>TechNexus</h1></div>
+    <nav>
+        <a data-page="accueil">Accueil</a>
+        <a data-page="prism-detail">Prism</a>
+        <a data-page="stella-detail">Stella</a>
+        <a data-page="harmonia-detail">Harmonia</a>
+        <a data-page="cart" id="cart-btn-nav">Panier</a>
+        <a data-page="conditions">Conditions d'utilisation</a>
+        <a data-page="contact">Contact</a>
+    </nav>
+</header>
+<main>
+    <!-- Slider accueil + produits -->
+    <section id="accueil" class="page active">
+        <div class="slider-container" id="slider">
+            <div class="slide active"><img src="img/banner.jpg" alt=""><div class="slide-content"><div class="slide-title">Bienvenue sur TechNexus !</div><div class="slide-desc">Explorez la nouvelle génération du matériel de jeu.</div></div></div>
+            <div class="slide"><img src="img/prism1.jpg" alt=""><div class="slide-content"><div class="slide-title">Prism</div><div class="slide-desc">Clavier mécanique RGB haut de gamme.</div></div></div>
+            <div class="slide"><img src="img/stella1.jpg" alt=""><div class="slide-content"><div class="slide-title">Stella</div><div class="slide-desc">Souris gaming ultra précise et ergonomique.</div></div></div>
+            <div class="slide"><img src="img/harmonia1.jpg" alt=""><div class="slide-content"><div class="slide-title">Harmonia</div><div class="slide-desc">Casque audio stéréo et micro HD confortable.</div></div></div>
+            <button class="slider-btn left" id="slider-prev">&#8249;</button>
+            <button class="slider-btn right" id="slider-next">&#8250;</button>
+        </div>
+        <section class="product-grid" aria-label="Produits phares">
+            <article class="product-card" data-page="prism-detail" data-id="prism">
+                <img src="img/prism1.jpg" alt="Prism Keyboard" />
+                <div class="content">
+                    <h2>Prism</h2>
+                    <p>Clavier mécanique RGB haut de gamme. Switches Cherry MX, rétroéclairage personnalisable.</p>
+                    <div class="button-row">
+                        <button class="button-link" data-page="prism-detail" data-id="prism">En savoir plus</button>
+                        <button class="add-cart" data-id="prism">Ajouter au panier</button>
+                    </div>
+                </div>
+            </article>
+            <article class="product-card" data-page="stella-detail" data-id="stella">
+                <img src="img/stella1.jpg" alt="Stella Mouse" />
+                <div class="content">
+                    <h2>Stella</h2>
+                    <p>Souris gaming ultra précise, RGB, ergonomique. Idéale compétition.</p>
+                    <div class="button-row">
+                        <button class="button-link" data-page="stella-detail" data-id="stella">En savoir plus</button>
+                        <button class="add-cart" data-id="stella">Ajouter au panier</button>
+                    </div>
+                </div>
+            </article>
+            <article class="product-card" data-page="harmonia-detail" data-id="harmonia">
+                <img src="img/harmonia1.jpg" alt="Harmonia Headset" />
+                <div class="content">
+                    <h2>Harmonia</h2>
+                    <p>Casque audio stéréo, micro HD intégrée, design léger et isolant.</p>
+                    <div class="button-row">
+                        <button class="button-link" data-page="harmonia-detail" data-id="harmonia">En savoir plus</button>
+                        <button class="add-cart" data-id="harmonia">Ajouter au panier</button>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </section>
+
+    <!-- PRISM DETAIL -->
+    <section id="prism-detail" class="page product-detail">
+        <div class="product-flex-wrap">
+            <div class="prod-gallery">
+                <img src="img/prism1.jpg" alt="Prism" />
+                <div class="prod-thumb-row">
+                    <img src="img/prism1.jpg" alt="thumb1">
+                    <img src="img/prism2.jpg" alt="thumb2">
+                </div>
+            </div>
+            <div class="prod-info-card">
+                <h2>Prism</h2>
+                <div class="prod-minor">Clavier mécanique RGB haut de gamme</div>
+                <div class="prod-desc">Touches Cherry MX, rétroéclairage RGB personnalisable, performance et confort extrême.</div>
+                <label class="prod-label">COULEUR</label>
+                <div class="prod-color-row">
+                    <button class="prod-color" data-color="noir" style="background:#111;"></button>
+                    <button class="prod-color" data-color="gris" style="background:#555;"></button>
+                    <button class="prod-color" data-color="rose" style="background:#e57cc5;"></button>
+                    <button class="prod-color" data-color="vert" style="background:#47e191;"></button>
+                </div>
+                <label class="prod-label">SWITCH</label>
+                <div class="prod-size-row">
+                    <button class="prod-size" data-size="Red">Red</button>
+                    <button class="prod-size" data-size="Brown">Brown</button>
+                    <button class="prod-size" data-size="Blue">Blue</button>
+                </div>
+                <div style="margin:1.1em 0 1.3em 0;display:flex;align-items:center;gap:1.3rem;">
+                    <button id="prod-buy-prism" class="prod-buy-btn" disabled>Ajouter au panier</button>
+                    <span class="prod-price">149,99 €</span>
+                </div>
+                <button class="back-button" data-page="accueil">&larr; Retour à l'accueil</button>
+            </div>
+        </div>
+    </section>
+    <!-- STELLA DETAIL -->
+    <section id="stella-detail" class="page product-detail">
+        <div class="product-flex-wrap">
+            <div class="prod-gallery">
+                <img src="img/stella1.jpg" alt="Stella" />
+                <div class="prod-thumb-row">
+                    <img src="img/stella1.jpg" alt="thumb1">
+                    <img src="img/stella2.jpg" alt="thumb2">
+                </div>
+            </div>
+            <div class="prod-info-card">
+                <h2>Stella</h2>
+                <div class="prod-minor">Souris gaming ultra légère</div>
+                <div class="prod-desc">16500 DPI, RGB, ultra ergonomique, maîtrise et précision pour tous les styles de jeux.</div>
+                <label class="prod-label">COULEUR</label>
+                <div class="prod-color-row">
+                    <button class="prod-color" data-color="noir" style="background:#222;"></button>
+                    <button class="prod-color" data-color="bleu" style="background:#43aaff;"></button>
+                    <button class="prod-color" data-color="orange" style="background:#ffd600;"></button>
+                </div>
+                <label class="prod-label">MODÈLE</label>
+                <div class="prod-size-row">
+                    <button class="prod-size" data-size="Droitier">Droitier</button>
+                    <button class="prod-size" data-size="Gaucher">Gaucher</button>
+                </div>
+                <div style="margin:1.1em 0 1.3em 0;display:flex;align-items:center;gap:1.3rem;">
+                    <button id="prod-buy-stella" class="prod-buy-btn" disabled>Ajouter au panier</button>
+                    <span class="prod-price">59,99 €</span>
+                </div>
+                <button class="back-button" data-page="accueil">&larr; Retour à l'accueil</button>
+            </div>
+        </div>
+    </section>
+    <!-- HARMONIA DETAIL -->
+    <section id="harmonia-detail" class="page product-detail">
+        <div class="product-flex-wrap">
+            <div class="prod-gallery">
+                <img src="img/harmonia1.jpg" alt="Harmonia" />
+                <div class="prod-thumb-row">
+                    <img src="img/harmonia1.jpg" alt="thumb1">
+                    <img src="img/harmonia2.jpg" alt="thumb2">
+                </div>
+            </div>
+            <div class="prod-info-card">
+                <h2>Harmonia</h2>
+                <div class="prod-minor">Casque stéréo & micro HD</div>
+                <div class="prod-desc">Isolation active, micro HD rétractable, ultra confortable — idéal gaming et streaming.</div>
+                <label class="prod-label">COULEUR</label>
+                <div class="prod-color-row">
+                    <button class="prod-color" data-color="noir" style="background:#111;"></button>
+                    <button class="prod-color" data-color="rose" style="background:#e57cc5;"></button>
+                    <button class="prod-color" data-color="orange" style="background:#ffd600;"></button>
+                </div>
+                <label class="prod-label">TAILLE</label>
+                <div class="prod-size-row">
+                    <button class="prod-size" data-size="M">M</button>
+                    <button class="prod-size" data-size="L">L</button>
+                </div>
+                <div style="margin:1.1em 0 1.3em 0;display:flex;align-items:center;gap:1.3rem;">
+                    <button id="prod-buy-harmonia" class="prod-buy-btn" disabled>Ajouter au panier</button>
+                    <span class="prod-price">89,99 €</span>
+                </div>
+                <button class="back-button" data-page="accueil">&larr; Retour à l'accueil</button>
+            </div>
+        </div>
+    </section>
+    <!-- PANIER -->
+    <section id="cart" class="page">
+        <h2>Votre panier</h2>
+        <ul class="cart-list"></ul>
+        <p class="total-price"></p>
+        <button id="proceed-payment" disabled>Payer</button>
+        <button class="back-button" data-page="accueil">← Retour à l'accueil</button>
+    </section>
+    <!-- Conditions d'utilisation -->
+    <section id="conditions" class="page">
+        <h2>Conditions d'utilisation</h2>
+        <p>En utilisant ce site, vous acceptez nos conditions d'utilisation. Toutes les données bancaires saisies sur ce site sont fictives et destinées uniquement à une démonstration.<br>Nous ne stockons ni ne traitons aucune donnée sensible. Les produits affichés sont présentés à titre d'exemple pour un projet pédagogique.</p>
+        <button class="back-button" data-page="accueil">← Retour à l'accueil</button>
+    </section>
+    <!-- Contact -->
+    <section id="contact" class="page">
+        <h2>Contact</h2>
+        <p>Pour toute question ou demande, contactez-nous à l'adresse : <a href="mailto:contact@technexus.com" style="color:#e63946;">contact@technexus.com</a></p>
+        <button class="back-button" data-page="accueil">← Retour à l'accueil</button>
+    </section>
+</main>
+<footer>
+    &copy; 2024 TechNexus - Tous droits réservés -
+    <a href="#" data-page="conditions" style="color:#e63946; text-decoration: underline; cursor: pointer;">Conditions d'utilisation</a>
+</footer>
+<!-- Cookies Popup -->
+<div id="cookie-popup" class="cookie-popup">
+    <span class="cookie-title">Cookies and advertising choices</span>
+    <span>Ce site utilise des cookies pour améliorer votre expérience, personnaliser la publicité et analyser notre trafic. En continuant la navigation, vous acceptez nos <a href="#" data-page="conditions" style="color:#e63946;text-decoration:underline;">conditions d'utilisation</a>.</span>
+    <div class="cookie-actions">
+        <button id="cookie-accept">Accepter tout</button>
+        <button id="cookie-custom" class="secondary">Personnaliser</button>
+        <button id="cookie-refuse" class="secondary">Refuser tout</button>
+    </div>
+</div>
+<!-- MODAL PAIEMENT -->
+<div id="payment-modal">
+    <form id="payment-content" autocomplete="off" novalidate>
+        <span class="close-x" id="close-modal">&times;</span>
+        <h3>Paiement par carte bancaire</h3>
+        <div class="pay-logos">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa"/>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard"/>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/American_Express_logo_%282018%29.svg" alt="Amex"/>
+        </div>
+        <label class="payment-label" for="credit-card">Numéro de carte</label>
+        <input class="payment-input" id="credit-card" name="cc" inputmode="numeric" maxlength="19" pattern="[\d ]{15,19}" required placeholder="2324 5566 6677 7898" />
+        <label class="payment-label" for="pay-name">Nom du titulaire</label>
+        <input class="payment-input" id="pay-name" name="ccname" required placeholder="Nom prénom" />
+        <div class="payment-row">
+            <div style="width:48%">
+                <label class="payment-label" for="pay-expiry">Expiration</label>
+                <input class="payment-input" id="pay-expiry" maxlength="5" required placeholder="11/34"/>
+            </div>
+            <div class="cvc-eye-group" style="width:48%">
+                <label class="payment-label" for="pay-cvc">CVV</label>
+                <input class="payment-input" id="pay-cvc" maxlength="4" type="password" autocomplete="off" required placeholder="234" />
+                <button type="button" tabindex="-1" class="eye-btn" id="toggle-cvc">&#128065;</button>
+            </div>
+        </div>
+        <div class="pay-save-row">
+            <input type="checkbox" class="pay-save-checkbox" id="pay-save">
+            <label for="pay-save" style="font-size:0.92em;color:#aaa;cursor:pointer">Enregistrer cette carte</label>
+        </div>
+        <button type="submit" class="pay-btn-modal">pay</button>
+        <span class="pay-success" style="display:none"></span>
+        <span class="pay-error" style="display:none"></span>
+    </form>
+</div>
+<script>
+    // NAVIGATION ENTRE PAGES
+    const links = document.querySelectorAll('nav a, .button-link, .back-button, .product-card[data-page], #cookie-popup a[data-page]');
+    const pages = document.querySelectorAll('section.page');
+    function showPage(pageId) {
+        pages.forEach(page => page.classList.toggle('active', page.id === pageId));
+        window.scrollTo({top:0});
+        if(pageId==="cart") renderCart();
+    }
+    links.forEach(link=>{
+        link.addEventListener('click', e=>{
+            const page=link.getAttribute('data-page');
+            if(page){
+                e.preventDefault();
+                showPage(page);
+            }
+        });
+    });
+    showPage('accueil');
+
+    // PANIER EN LOCALSTORAGE
+    const products = {
+        prism: {id:"prism", name:"Prism", price:149.99},
+        stella: {id:"stella", name:"Stella", price:59.99},
+        harmonia: {id:"harmonia", name:"Harmonia", price:89.99}
+    };
+    function getCart() {
+        const cart = localStorage.getItem('technexus-cart');
+        return cart ? JSON.parse(cart) : {};
+    }
+    function saveCart(cart){
+        localStorage.setItem('technexus-cart', JSON.stringify(cart));
+    }
+
+    // AJOUT AU PANIER SIMPLE (page d'accueil)
+    document.querySelectorAll('.add-cart').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+            const id = btn.getAttribute('data-id');
+            const cart = getCart();
+            cart[id] = (cart[id] ?? 0) + 1;
+            saveCart(cart);
+            alert(products[id].name + " ajouté au panier !");
+        });
+    });
+
+    // PANIER AFFICHAGE ET GESTION
+    const cartList = document.querySelector('.cart-list');
+    const totalPriceEl = document.querySelector('.total-price');
+    const proceedPaymentBtn = document.getElementById('proceed-payment');
+
+    function renderCart() {
+        const cart = getCart();
+        cartList.innerHTML = "";
+        if(Object.keys(cart).length === 0){
+            cartList.innerHTML = "<li>Votre panier est vide.</li>";
+            proceedPaymentBtn.disabled = true;
+            totalPriceEl.textContent = "";
+            return;
+        }
+        let total = 0;
+        for(let id in cart){
+            let prodQty = cart[id];
+            let prodName = id;
+            let qty = prodQty;
+            let price = 0;
+            if(id.includes('_')){
+                // For products with selected options like "prism_noir_M"
+                const [key, color, size] = id.split('_');
+                prodName = `${products[key].name} (${color}, ${size})`;
+                price = products[key].price * qty;
+            } else {
+                prodName = products[id] ? products[id].name : id;
+                price = products[id] ? products[id].price * qty : 0;
+            }
+            total += price;
+            const li = document.createElement('li');
+            const spanName = document.createElement('span');
+            spanName.textContent = `${prodName} - ${qty} × ${(price/qty).toFixed(2)} € = ${price.toFixed(2)} €`;
+            const btnRemove = document.createElement('button');
+            btnRemove.textContent = '🗑️';
+            btnRemove.title = 'Supprimer du panier';
+            btnRemove.onclick = () => {
+                delete cart[id];
+                saveCart(cart);
+                renderCart();
+            };
+            li.appendChild(spanName);
+            li.appendChild(btnRemove);
+            cartList.appendChild(li);
+        }
+        totalPriceEl.textContent = `Total TTC: ${total.toFixed(2)} €`;
+        proceedPaymentBtn.disabled = false;
+    }
+
+    document.getElementById('cart-btn-nav').onclick = () => {
+        showPage('cart');
+    };
+
+    if(proceedPaymentBtn){
+        proceedPaymentBtn.onclick = () => { showPaymentModal(); };
+    }
+
+    // LOGIQUE OPTIONS PRODUITS DÉTAILLÉS
+    ['prism','stella','harmonia'].forEach(key=>{
+        const prodBtn = document.getElementById('prod-buy-'+key);
+        if(!prodBtn) return;
+        let selectedColor = '', selectedSize = '';
+        const colorBtns = document.querySelectorAll(`#${key}-detail .prod-color`);
+        const sizeBtns = document.querySelectorAll(`#${key}-detail .prod-size`);
+        colorBtns.forEach(btn=>{
+            btn.onclick=()=>{
+                colorBtns.forEach(b=>b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedColor = btn.dataset.color;
+                prodBtn.disabled = !selectedColor || !selectedSize;
+            }
+        });
+        sizeBtns.forEach(btn=>{
+            btn.onclick=()=>{
+                sizeBtns.forEach(b=>b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedSize = btn.dataset.size;
+                prodBtn.disabled = !selectedColor || !selectedSize;
+            }
+        });
+        prodBtn.onclick=()=>{
+            if(!selectedColor||!selectedSize) return;
+            const prodCart = getCart();
+            let k = `${key}_${selectedColor}_${selectedSize}`;
+            prodCart[k] = (prodCart[k] ?? 0) + 1;
+            saveCart(prodCart);
+            alert(`${products[key].name} (${selectedColor}, ${selectedSize}) ajouté au panier !`);
+        };
+        // Mini-galerie produit détaillé
+        const thumbImgs = document.querySelectorAll(`#${key}-detail .prod-thumb-row img`);
+        const mainImg = document.querySelector(`#${key}-detail .prod-gallery > img`);
+        thumbImgs.forEach(img=>{
+            img.onclick=()=>{
+                thumbImgs.forEach(i=>i.classList.remove('selected'));
+                img.classList.add('selected');
+                mainImg.src=img.src;
+            };
+        });
+    });
+
+    // MODAL PAIEMENT
+    const payModal = document.getElementById('payment-modal');
+    const payForm = document.getElementById('payment-content');
+    const closePayBtn = document.getElementById('close-modal');
+
+    function showPaymentModal(){
+        payModal.style.display = 'flex';
+        payForm.reset();
+        payForm.querySelector('.pay-success').style.display = 'none';
+        payForm.querySelector('.pay-error').style.display = 'none';
+    }
+    closePayBtn.onclick = () => { payModal.style.display = 'none'; };
+
+    document.getElementById('toggle-cvc').onclick = () => {
+        let cvcinp = document.getElementById('pay-cvc');
+        cvcinp.type = cvcinp.type === "password" ? "text" : "password";
+    };
+
+    payForm.onsubmit = (e) => {
+        e.preventDefault();
+        payForm.querySelector('.pay-success').style.display = 'none';
+        payForm.querySelector('.pay-error').style.display = 'none';
+        let cc = document.getElementById('credit-card').value.replace(/ /g,"");
+        let nm = document.getElementById('pay-name').value.trim();
+        let cvv = document.getElementById('pay-cvc').value.trim();
+        let exp = document.getElementById('pay-expiry').value.trim();
+        let ok = cc.length >= 15 && cc.length <= 16 && /^\d+$/.test(cc)
+            && nm.length >= 3
+            && /^\d{2}\/\d{2}$/.test(exp)
+            && cvv.length >= 3 && cvv.length <= 4;
+        if(ok){
+            payForm.querySelector('.pay-success').textContent = "Paiement effectué avec succès !";
+            payForm.querySelector('.pay-success').style.display = "inline";
+            localStorage.removeItem('technexus-cart');
+            setTimeout(() => {payModal.style.display = 'none'; window.location.reload();}, 2000);
+        }else{
+            payForm.querySelector('.pay-error').textContent = "Données incomplètes ou format invalide";
+            payForm.querySelector('.pay-error').style.display = "inline";
+        }
+    };
+
+    // COOKIES POPUP
+    (function() {
+        const box = document.getElementById('cookie-popup');
+        const btns = [document.getElementById('cookie-accept'), document.getElementById('cookie-custom'), document.getElementById('cookie-refuse')];
+        if(!localStorage.getItem('cookie-choice')) box.classList.remove('hide');
+        else box.classList.add('hide');
+        btns.forEach(btn => btn.addEventListener('click', function(){
+            if(btn === btns[1]) alert("Panneau de personnalisation factice.");
+            localStorage.setItem('cookie-choice', btn.id === 'cookie-refuse' ? 'no' : 'yes');
+            box.classList.add('hide');
+        }));
+    })();
+
+    // SLIDER (ACCUEIL)
+    const slides = document.querySelectorAll('.slide');
+    const nextBtn = document.getElementById('slider-next');
+    const prevBtn = document.getElementById('slider-prev');
+    let currentSlide = 0;
+    let slideTimer;
+
+    function showSlide(index){
+        slides.forEach((slide,i)=>{
+            slide.classList.toggle('active', i === index);
+        });
+        currentSlide = index;
+    }
+    function nextSlide(){
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+    function prevSlide(){
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+    }
+    nextBtn.addEventListener('click', () => {
+        clearInterval(slideTimer);
+        nextSlide();
+        slideTimer = setInterval(nextSlide, 5000);
+    });
+    prevBtn.addEventListener('click', () => {
+        clearInterval(slideTimer);
+        prevSlide();
+        slideTimer = setInterval(nextSlide, 5000);
+    });
+    slideTimer = setInterval(nextSlide, 5000);
+    document.getElementById('slider').addEventListener('mouseenter', () => clearInterval(slideTimer));
+    document.getElementById('slider').addEventListener('mouseleave', () => slideTimer = setInterval(nextSlide, 5000));
+
+    document.querySelectorAll('footer a[data-page="conditions"]').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            showPage('conditions');
+        });
+    });
+</script>
+</body>
+</html>
